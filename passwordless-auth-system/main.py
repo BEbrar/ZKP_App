@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, send_from_directory
 from server.db import store_user, get_public_key
 from server.constants import g, p
 from client.proof_generator import generate_proof
+from client.cli import user_registration
 from server.verifier import verify_proof
 
 app = Flask(__name__)
@@ -24,11 +25,7 @@ def register():
     username = request.form['username']
     password = request.form['password']
 
-    # Compute public key y
-    x = int.from_bytes(hashlib.sha256(password.encode()).digest(), 'big') % (p - 1)
-    y = pow(g, x, p)
-
-    # Store username and public key
+    y=user_registration(username,password)
     store_user(username, y)
 
     # Generate proof for user to copy
