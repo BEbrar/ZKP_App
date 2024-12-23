@@ -29,10 +29,10 @@ def register():
     store_user(username, y)
 
     # Generate proof for user to copy
-    t, s = generate_proof(password, y)
+    c, s = generate_proof(password, y)
     return jsonify({
         "message": "Registration successful.",
-        "proof_t": hex(t),
+        "challenge_c": hex(c),
         "proof_s": hex(s)
     })
 
@@ -40,13 +40,17 @@ def register():
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
+    challenge_c_raw = request.form['challenge_c']
+    proof_s_raw = request.form['proof_s']
 
+    print(f"Debug: Received username = {username}, challenge_c = {challenge_c_raw}, proof_s = {proof_s_raw}")
+    
     try:
-        # Sanitize and convert proof_t and proof_s to integers
-        proof_t_raw = request.form['proof_t']
+        # Sanitize and convert challenge_c and proof_s to integers
+        challenge_c_raw = request.form['challenge_c']
         proof_s_raw = request.form['proof_s']
 
-        proof_t = int(proof_t_raw.replace('0x', '', 1), 16)  # Hex to int
+        challenge_c = int(challenge_c_raw.replace('0x', '', 1), 16)  # Hex to int
         proof_s = int(proof_s_raw.replace('0x', '', 1), 16)
 
     except ValueError:
@@ -61,12 +65,10 @@ def login():
     y = int(y)
 
     # Verify proof
-    if verify_proof(proof_t, proof_s, y):
+    if verify_proof(challenge_c, proof_s, y):
         return jsonify({"message": "Login successful!"})
     else:
         return jsonify({"error": "Invalid proof!"}), 401
 
-
 if __name__ == '__main__':
-    # Set the app root to the directory where main.py resides
     app.run(debug=True)

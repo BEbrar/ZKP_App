@@ -1,20 +1,22 @@
 import hashlib
 from server.constants import p, g, q
 
-# Verify proof (t, s) for given username
-def verify_proof(t, s, y):
+# Verify proof (c, s) for given username
+def verify_proof(c, s, y):
     # Ensure all inputs are integers
-    t = int(t)
+    c = int(c)
     s = int(s)
     y = int(y)
 
-    # Compute challenge
-    hash_input = f"{t}{y}".encode()
-    c = int(hashlib.sha256(hash_input).hexdigest(), 16) % q
+    # Recompute t using g^s * y^c mod p
+    lhs = (pow(g, s, p) * pow(y, c, p)) % p  # Recomputed commitment t
 
-    # Verify if g^s mod p == t * y^c mod p
-    lhs = pow(g, s, p)  # Left-hand side
-    rhs = (t * pow(y, c, p)) % p  # Right-hand side
+    # Recompute the challenge c = H(g || y || t)
+    hash_input = f"{g}{lhs}{y}".encode()
+    computed_c = int(hashlib.sha256(hash_input).hexdigest(), 16) % q
 
-    print(f"lhs: {lhs}, rhs: {rhs}")  # For Debugging  
-    return lhs == rhs
+    # Debugging output to inspect the values
+    print(f"lhs (recomputed t): {lhs}, computed_c: {computed_c}, received_c: {c}")
+
+    # Verify if the recomputed challenge matches the received challenge
+    return computed_c == c
