@@ -2,7 +2,7 @@ import hashlib
 import os
 from flask import Flask, request, jsonify, send_from_directory
 from server.db import store_user, get_public_key
-from server.constants import g, p
+from constants import g, p
 from client.proof_generator import generate_proof
 from client.cli import user_registration
 from server.verifier import verify_proof

@@ -1,5 +1,5 @@
 import hashlib
-from server.constants import p, g, q
+from constants import p, g, q
 
 # Verify proof (c, s) for given username
 def verify_proof(c, s, y):

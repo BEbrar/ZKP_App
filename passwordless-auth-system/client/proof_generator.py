@@ -1,6 +1,6 @@
 import hashlib
 import random
-from server.constants import p, g, q
+from constants import p, g, q
 
 
 # Derive x from password and generate proof

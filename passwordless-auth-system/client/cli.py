@@ -1,6 +1,6 @@
 # User registration
 import hashlib
-from server.constants import p, g, q
+from constants import p, g, q
 
 
 def user_registration(username, password):
